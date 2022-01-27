@@ -21,11 +21,36 @@ public class LetterController : MonoBehaviour
     public int AMOUNT_LETTERS = 2;
     public int AMOUNT_STARTING_POS = 2;
 
+
+    static List<string> slicedLetters = new List<string>();
+    static List<string> words = new List<string>();
+    private static Text t;
+    private static Text t2;
+    static Dictionary<string, int> scorelist = new Dictionary<string, int>()
+        {
+            { "D", 1 }, { "O", 2 }, { "R", 1 }, { "Ä", 4 }, { "S", 1 }, { "Å", 4 },
+            { "E", 1 }, { "T", 1 }, { "L", 1 }, { "A", 1 }, { "F", 4 }, { "Ö", 4 },
+            { "I", 1 }, { "N", 1 }, { "Y", 8 }, { "H", 3 }, { "M", 3 }, { "G", 2 },
+            { "B", 4 }, { "K", 3 }, { "C", 8 }, { "X", 10 }, { "P", 3 }, { "V", 4 },
+            { "Z", 10 }, { "J", 8 }, { "U", 3 }, { "Q", 10 }
+        };
+    private static int score = 0;
+    static int countRound = 0;
+    static int x = 0;
+    static int y = 0;
+    static Vector3 pos1;
+
+
     void Start()
     {
         cam = Camera.main;
         rightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x;
         leftEdge = cam.ScreenToWorldPoint(new Vector2(0, 0)).x;
+
+        Transform child = transform.Find("slicedLetters");
+        t = child.GetComponent<Text>();
+        Transform child2 = transform.Find("score");
+        t2 = child2.GetComponent<Text>();
 
         if (sword == null)
         {
@@ -45,12 +70,101 @@ public class LetterController : MonoBehaviour
         Destroy(tempLetter);
     }
 
-    void FixedUpdate()
+    public static void getLet(string st)
     {
-        Vector3 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+        LetterController.slicedLetters.Add(st);
+        LetterController.t.text += st;
+
+        LetterController.countRound++;
+        if (LetterController.countRound >= 8)
+        {
+            LetterController.checkScore();
+            LetterController.countRound = 0;
+            LetterController.t.text = "";
+        }
+
+    }
+
+    /*public static void getPos(int x1, int y1)
+    {
+        Vector3 pos1;
+        pos1.x = x1;
+        pos1.y = y1;
+        Vector3 pos = cam.ScreenToWorldPoint(pos1);
         sword.transform.position = pos;
 
-        if(currentLetters.Count < AMOUNT_LETTERS)
+
+    }*/
+
+    public static void checkScore()
+    {
+
+        string k = LetterController.t.text.ToLower();
+
+        for (int i = 0; i < k.Length; i++)
+        {
+            for (int j = i + 1; j <= k.Length; j++)
+            {
+                string substr = k.Substring(i, j - i);
+                if (substr.Length <= 1)
+                {
+                    continue;
+                }
+                //print("sub = " + substr);
+
+
+                foreach (var line in System.IO.File.ReadAllLines(@"C:\Users\erikp\OneDrive\Skrivbord\ordlista.txt"))
+                {
+
+
+
+                    if (line.Equals(substr))
+                    {
+                        words.Add(substr);
+                        break;
+                    }
+                }
+            }
+        }
+
+        words.TrimExcess();
+        for (int i = 0; i < words.Capacity; i++)
+        {
+            print(i+1 + ": " + words[i]);
+            for (int j = 0; j < words[i].Length; j++)
+            {
+                string substr = words[i].Substring(j, 1);
+                LetterController.score += LetterController.scorelist[substr.ToUpper()];
+            }
+        }
+        //LetterController.score += LetterController.scorelist[st];
+        LetterController.t2.text = LetterController.score.ToString();
+
+
+
+
+
+
+
+        //foreach (KeyValuePair<string, int> set in scorelist)
+        //{
+        //    print($"Pair here: {set.Key}, {set.Value}");
+        //}
+    }
+
+    void FixedUpdate()
+    {
+
+        //SwordCapture.getPos(x, y);
+        pos1.x = SwordCapture.getPos();
+        pos1.y = SwordCapture.getY();
+        print("x = " + pos1.x);
+        print("y = " + pos1.y);
+        Vector3 pos = cam.ScreenToWorldPoint(pos1);
+        sword.transform.position = pos;
+
+
+        if (currentLetters.Count < AMOUNT_LETTERS)
         {
             currentLetters.Add(SpawnLetter());
         }
