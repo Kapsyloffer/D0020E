@@ -17,8 +17,8 @@ public class SwordCapture : MonoBehaviour
 	string h;
 	static int x1;
 	static int y1;
-	int w1;
-	int h1;
+	static int w1;
+	static int h1;
 	float x2;
 	float y2;
 	float w2;
@@ -57,7 +57,7 @@ public class SwordCapture : MonoBehaviour
 				byte[] data = client.Receive(ref anyIP); //4
 
 				string text = Encoding.UTF8.GetString(data); //5
-				print(">> " + text);
+				//print(">> " + text);
 
 				int count = 0;
 				foreach (char c in text)
@@ -143,18 +143,27 @@ public class SwordCapture : MonoBehaviour
 		//cube.transform.position = new Vector3(xPos - 6.0f, -3, 0);
 	}
 
-	public static int getPos()
+	public static int getX()
     {
 		return SwordCapture.x1;
-		//x = SwordCapture.x1;
-		//y = SwordCapture.y1;
-		//print("xx = " + SwordCapture.x1);
-		//print("yy = " + SwordCapture.y1);
+
 	}
 
 	public static int getY()
     {
 		return SwordCapture.y1;
 	}
+
+	public static int getW()
+	{
+		return SwordCapture.w1;
+	}
+
+	public static int getH()
+	{
+		return SwordCapture.h1;
+	}
+
+
 
 }
