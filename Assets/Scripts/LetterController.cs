@@ -7,20 +7,20 @@ public class LetterController : MonoBehaviour
 {
     public GameObject Letter_Prefab;//Set in editor
     public netMan networkManager;
-    private Camera cam;
+    private static Camera cam;
     private Vector2 mousePos = new Vector2();
 
     private enum UpDown { Down = -1, Start = 0, Up = 1 };
     public GameObject sword;
     private float textHeight = 0;
-    private float rightEdge;
-    private float leftEdge;
+    private static float rightEdge;
+    private static float leftEdge;
     private int NO_COLLISION_LAYER;
     private int COLLISION_LAYER;
 
     private List<GameObject> currentLetters = new List<GameObject>();
     public int AMOUNT_LETTERS = 2;
-    public int AMOUNT_STARTING_POS = 2;
+    public static int AMOUNT_STARTING_POS = 2;
 
     private string LetterString = "";
 
@@ -263,40 +263,17 @@ public class LetterController : MonoBehaviour
     //Spawn random letter at random location on screen
     private GameObject SpawnLetter()
     {
-        //Avoid division by 0 or lower
-        int startingPositions = AMOUNT_STARTING_POS <= 0 ? 1 : AMOUNT_STARTING_POS;
-
         // Create Gameobject Letter
         GameObject LetterObject = Instantiate(Letter_Prefab);
         LetterObject.transform.SetParent(this.transform);
 
         // Vars
         Text letter = LetterObject.GetComponent<Text>();
-        Rigidbody2D rigidbody = LetterObject.GetComponent<Rigidbody2D>();
 
         int letterOffset = Random.Range(0, 9999);
-        float yVelocity = Random.Range(12, 20);
-        int direction = Random.Range(0,2)*2-1; //Random number 0 or 1, *2 == 0 or 2, -1 == -1 or 1 (Negative or positive)
 
-        int startingBlock = Random.Range(0, startingPositions);
-        float blockWidth = Screen.width / startingPositions;
-        float startPosition = blockWidth*startingBlock + blockWidth/2;
-
-
-        // Properties
-        letter.transform.localScale = Vector3.one;
-        letter.transform.position = cam.ScreenToWorldPoint(new Vector3(startPosition, 0, 0));
-
-        // Behaviour
-        rigidbody.velocity = new Vector2(0, yVelocity);
-        float sideVelocity = MaxSideVelocity(LetterObject);
-        rigidbody.velocity = new Vector2(sideVelocity*direction, rigidbody.velocity.y);
-
-        //Change Velocity direction if letter will leave screen
-        if (WillFallOffScreen(LetterObject))
-        { 
-            rigidbody.velocity = new Vector2(-rigidbody.velocity.x, rigidbody.velocity.y);
-        }
+        LetterObject.transform.localScale = Vector3.one;
+        SetProperties(LetterObject);
 
         //Här väljer vi en random char ur strängen.
         letter.text = char.ToString((LetterString[letterOffset]));
@@ -305,7 +282,35 @@ public class LetterController : MonoBehaviour
         return LetterObject;
     }
 
-    private float MaxSideVelocity(GameObject letter)
+    public static void SetProperties(GameObject obj)
+    {
+        //Avoid division by 0 or lower
+        int startingPositions = AMOUNT_STARTING_POS <= 0 ? 1 : AMOUNT_STARTING_POS;
+        Rigidbody2D rigidbody = obj.GetComponent<Rigidbody2D>();
+
+        float yVelocity = Random.Range(12, 20);
+        int direction = Random.Range(0, 2) * 2 - 1; //Random number 0 or 1, *2 == 0 or 2, -1 == -1 or 1 (Negative or positive)
+
+        int startingBlock = Random.Range(0, startingPositions);
+        float blockWidth = Screen.width / startingPositions;
+        float startPosition = blockWidth * startingBlock + blockWidth / 2;
+
+        // Properties
+        obj.transform.position = cam.ScreenToWorldPoint(new Vector3(startPosition, 0, 0));
+
+        // Behaviour
+        rigidbody.velocity = new Vector2(0, yVelocity);
+        float sideVelocity = MaxSideVelocity(obj);
+        rigidbody.velocity = new Vector2(sideVelocity * direction, rigidbody.velocity.y);
+
+        //Change Velocity direction if letter will leave screen
+        if (WillFallOffScreen(obj))
+        {
+            rigidbody.velocity = new Vector2(-rigidbody.velocity.x, rigidbody.velocity.y);
+        }
+    }
+
+    private static float MaxSideVelocity(GameObject letter)
     {
         Rigidbody2D rigidbody = letter.GetComponent<Rigidbody2D>();
         float yVelocity = rigidbody.velocity.y;
@@ -316,7 +321,7 @@ public class LetterController : MonoBehaviour
         return (distanceToSide * Mathf.Abs(Physics2D.gravity.y) * rigidbody.gravityScale) / (2 * yVelocity);
     }
 
-    private bool WillFallOffScreen(GameObject letter)
+    private static bool WillFallOffScreen(GameObject letter)
     {
         Rigidbody2D rigidbody = letter.GetComponent<Rigidbody2D>();
         Vector2 velocity = rigidbody.velocity;
