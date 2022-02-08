@@ -1,0 +1,11 @@
+# UDP_IP = "127.0.0.1"
+#UDP_IP = "192.168.10.166"
+#UDP_PORT = 5065
+# AF_INET = IPv4
+# SOCK_DGRAM = UDP
+# sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+
+    #newstr = str((int(abs(array[0]-500)))) + ":" + str((int(abs((array[1]/2)-250)))) + ":" +\
+             #str((int(array[2]))) + ":" + str((int(array[3]))) + ":"
+    #For unknown length strings
