@@ -18,6 +18,18 @@ def maskRedTuned2():
     return numpy.array([172, 100, 100]), numpy.array([178, 255, 255])
 
 
+def maskRedTuned3():
+    return numpy.array([3, 100, 120]), numpy.array([7, 255, 255])
+
+
+def maskRedTuned4():
+    return numpy.array([173, 100, 120]), numpy.array([177, 255, 255])
+
+
+def maskGreen1():
+    return numpy.array([50,100,120]), numpy.array([70,255,255])
+
+
 def maskBlue():
     return numpy.array([100, 50, 50]), numpy.array([130, 255, 255])
 
