@@ -79,8 +79,9 @@ public class Slice : MonoBehaviour
         }
         else
         {
-            newPos = Camera.main.ScreenToWorldPoint(new Vector3((clist[0] * (Screen.width / 500)), (clist[1] * (Screen.height / 500))), 0);
-            Debug.Log("Xn: " + clist[0] * (Screen.width / 500) + " Yn: " + clist[1] * (Screen.height / 500));
+            //newPos = Camera.main.ScreenToWorldPoint(new Vector3((clist[0] * (Screen.width / 500)), (clist[1] * (Screen.height / 500))), 0);
+            //Debug.Log("Xn: " + clist[0] * (Screen.width / 500) + " Yn: " + clist[1] * (Screen.height / 500));
+            newPos = networkManagerOBJ.GetComponent<netMan>().Sphere.transform.position;
         }
         Debug.Log("X: " + clist[0] + " Y: " + clist[1]);
         Debug.Log("X: " + Input.mousePosition.x + " Y: " + Input.mousePosition.y);

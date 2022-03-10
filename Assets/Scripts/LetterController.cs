@@ -231,7 +231,14 @@ public class LetterController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(!useMouse)
+        {
+            slicing = true;
+        }
+        else
+        {
         slicing = Slicecheck.GetComponent<Slice>().isSlicing;
+        }
         Vector3 pos;
         if (!useMouse)
         {
