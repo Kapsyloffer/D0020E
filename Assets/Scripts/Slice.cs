@@ -26,10 +26,14 @@ public class Slice : MonoBehaviour
         clist = networkManagerOBJ.GetComponent<netMan>().coordList;
         if (!useMouse)
         {
-            diffX = Mathf.Abs(clist[0] - lastPos[0]) / 500;
-            diffY = Mathf.Abs(clist[1] - lastPos[1]) / 500;
-            lastPos[0] = clist[0];
-            lastPos[1] = clist[1];
+            var xPos = clist[0] * (Screen.width / 500);
+            var yPos = clist[1] * (Screen.height / 500);
+
+            diffX = Mathf.Abs(xPos - lastPos[0]) / Screen.width;
+            diffY = Mathf.Abs(yPos - lastPos[1]) / Screen.height;
+
+            lastPos[0] = xPos;
+            lastPos[1] = yPos;
         }
         else
         {
@@ -40,7 +44,7 @@ public class Slice : MonoBehaviour
         }
         float Pytsen = Mathf.Sqrt(Mathf.Pow(diffX, 2) + Mathf.Pow(diffY, 2)) * 100;
         var wasSlicing = isSlicing;
-        isSlicing = Pytsen > threshold ? true : false;
+        isSlicing = Mathf.Abs(Pytsen) >= threshold ? true : false;
 
         if(isSlicing && !wasSlicing && canMakeSound)
         {
@@ -69,15 +73,18 @@ public class Slice : MonoBehaviour
     {
         trail.SetActive(isSlicing);
         Vector3 newPos;
-        if (useMouse)
+        if(useMouse)
         {
             newPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
         }
         else
         {
-            newPos = new Vector3(diffX, diffY, 0);
+            newPos = Camera.main.ScreenToWorldPoint(new Vector3((clist[0] * (Screen.width / 500)), (clist[1] * (Screen.height / 500))), 0);
+            Debug.Log("Xn: " + clist[0] * (Screen.width / 500) + " Yn: " + clist[1] * (Screen.height / 500));
         }
+        Debug.Log("X: " + clist[0] + " Y: " + clist[1]);
+        Debug.Log("X: " + Input.mousePosition.x + " Y: " + Input.mousePosition.y);
+        //Debug.Log(newPos);
         trail.transform.position = newPos;
-        Debug.Log(diffX + " " + diffY);
     }
 }
