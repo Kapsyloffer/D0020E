@@ -6,13 +6,15 @@ public class Slice : MonoBehaviour
 {
     private bool useMouse = false;
     public bool isSlicing = false;
-    public netMan networkManager;
+    public GameObject networkManagerOBJ;
     private static Camera cam;
     float[] lastPos = new float[] {0.0f, 0.0f};
     public float threshold = 7.0f;
     public GameObject trail;
-
+    private float diffX;
+    private float diffY;
     private bool canMakeSound = true;
+    [SerializeField] private int[] clist;
 
     void Start()
     {
@@ -21,17 +23,13 @@ public class Slice : MonoBehaviour
 
     void FixedUpdate()
     {
-        float diffX;
-        float diffY;
-
+        clist = networkManagerOBJ.GetComponent<netMan>().coordList;
         if (!useMouse)
         {
-            networkManager.ReceiveData();
-            Vector3 udppos = new Vector3((float)networkManager.coordList[0], (float)networkManager.coordList[1], 0.0f);
-            diffX = Mathf.Abs(cam.ScreenToWorldPoint(udppos).x - lastPos[0]) / Screen.width;
-            diffY = Mathf.Abs(cam.ScreenToWorldPoint(udppos).y - lastPos[1]) / Screen.height;
-            lastPos[0] = cam.ScreenToWorldPoint(udppos).x;
-            lastPos[1] = cam.ScreenToWorldPoint(udppos).y;
+            diffX = Mathf.Abs(clist[0] - lastPos[0]) / 500;
+            diffY = Mathf.Abs(clist[1] - lastPos[1]) / 500;
+            lastPos[0] = clist[0];
+            lastPos[1] = clist[1];
         }
         else
         {
@@ -70,10 +68,16 @@ public class Slice : MonoBehaviour
     void Update()
     {
         trail.SetActive(isSlicing);
-        Vector3 newPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Mathf.Abs(Camera.main.transform.position.z - transform.position.z)));
-        newPos.z = 0;
-
-
+        Vector3 newPos;
+        if (useMouse)
+        {
+            newPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+        }
+        else
+        {
+            newPos = new Vector3(diffX, diffY, 0);
+        }
         trail.transform.position = newPos;
+        Debug.Log(diffX + " " + diffY);
     }
 }
